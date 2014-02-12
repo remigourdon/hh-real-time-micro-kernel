@@ -56,3 +56,11 @@ exception insert_timerList(listobj* elmt) {
     elmt->pPrevious = current;
     return OK;
 }
+
+listobj* extract_timerList(void) {
+    listobj* first = timerList->pHead;
+    first->pNext->pPrevious = NULL;
+    timerList->pHead = first->pNext;
+    firs->pNext = NULL;
+    return first;
+}
