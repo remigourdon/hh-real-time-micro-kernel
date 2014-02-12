@@ -3,6 +3,13 @@
  * @brief List management system definition.
  */
 
+#ifndef LISTS_H
+#define LISTS_H
+
+/////////////////////
+// LIST STRUCTURES //
+/////////////////////
+
 /**
  * @brief Generic list item.
  */
@@ -22,3 +29,4 @@ typedef struct {
     listobj         *pTail;     /**< Pointer to the tail of the list */
 } list;
 
+#endif
