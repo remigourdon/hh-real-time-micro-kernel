@@ -6,12 +6,12 @@
 exception insert_readyList(listobj* elmt) {
     listobj* current = readyList->pHead;
 
-    if(readyList->pHead == readyList->pTail == null) { // If empty list
+    if(readyList->pHead == readyList->pTail == NULL) { // If empty list
         readyList->pHead = elmt;
         readyList->pTail = elmt;
         return OK;
     }
-    while(current->pNext != null) { // Until we reach the end of the list
+    while(current->pNext != NULL) { // Until we reach the end of the list
         if(elmt->pTask->DeadLine < current->pTask->DeadLine) {
             current->pPrevious->pNext = elmt;
             elmt->pPrevious = current->pPrevious;

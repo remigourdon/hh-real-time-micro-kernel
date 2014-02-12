@@ -50,7 +50,7 @@ exception insert_readyList(listobj* elmt);
  *
  * The first element of the list (lowest deadline) is extracted.
  * 
- * @return Pointer to the extracted element or null.
+ * @return Pointer to the extracted element or NULL.
  */
 listobj* extract_readyList(void);
 
@@ -70,7 +70,7 @@ exception insert_timerList(listobj* elmt, uint nTCnt);
  *
  * The first element of the list (lowest tick counter) is extracted.
  * 
- * @return  Pointer to the extracted element or null.
+ * @return  Pointer to the extracted element or NULL.
  */
 listobj* extract_timerList(void);
 
@@ -90,7 +90,7 @@ exception insert_waitingList(listobj* elmt);
  * The element corresponding to the parameter is extracted.
  * 
  * @param  elmt Pointer to the element to be extracted.
- * @return      Pointer to the extracted element or null.
+ * @return      Pointer to the extracted element or NULL.
  */
 listobj* extract_waitingList(listobj* elmt);
 
