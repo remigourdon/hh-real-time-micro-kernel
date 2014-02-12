@@ -28,15 +28,19 @@ exception insert_readyList(listobj* elmt) {
 
 listobj* extract_readyList(void) {
     listobj* first = readyList->pHead;
+    if(first->pNext == NULL) {  // If only one element in list
+        readyList->pHead = NULL;
+        readyList->pTail = NULL;
+        return first;
+    }
     first->pNext->pPrevious = NULL;
     readyList->pHead = first->pNext;
-    firs->pNext = NULL;
+    first->pNext = NULL;
     return first;
 }
 
 exception insert_timerList(listobj* elmt) {
     listobj* current = timerList->pHead;
-
     if(timerList->pHead == NULL) { // If empty list
         timerList->pHead = elmt;
         timerList->pTail = elmt;
@@ -59,6 +63,11 @@ exception insert_timerList(listobj* elmt) {
 
 listobj* extract_timerList(void) {
     listobj* first = timerList->pHead;
+    if(first->pNext == NULL) {  // If only one element in list
+        timerList->pHead = NULL;
+        timerList->pTail = NULL;
+        return first;
+    }
     first->pNext->pPrevious = NULL;
     timerList->pHead = first->pNext;
     firs->pNext = NULL;
