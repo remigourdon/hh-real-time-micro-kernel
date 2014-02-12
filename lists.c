@@ -6,7 +6,7 @@
 exception insert_readyList(listobj* elmt) {
     listobj* current = readyList->pHead;
 
-    if(readyList->pHead == readyList->pTail == NULL) { // If empty list
+    if(readyList->pHead == NULL) { // If empty list
         readyList->pHead = elmt;
         readyList->pTail = elmt;
         return OK;
@@ -37,7 +37,7 @@ listobj* extract_readyList(void) {
 exception insert_timerList(listobj* elmt) {
     listobj* current = timerList->pHead;
 
-    if(timerList->pHead == timerList->pTail == NULL) { // If empty list
+    if(timerList->pHead == NULL) { // If empty list
         timerList->pHead = elmt;
         timerList->pTail = elmt;
         return OK;
@@ -68,7 +68,7 @@ listobj* extract_timerList(void) {
 exception insert_waitingList(listobj* elmt) {
     listobj* current = waitingList->pHead;
 
-    if(waitingList->pHead == waitingList->pTail == NULL) { // If empty list
+    if(waitingList->pHead == NULL) { // If empty list
         waitingList->pHead = elmt;
         waitingList->pTail = elmt;
         return OK;
