@@ -33,3 +33,26 @@ listobj* extract_readyList(void) {
     firs->pNext = NULL;
     return first;
 }
+
+exception insert_timerList(listobj* elmt) {
+    listobj* current = timerList->pHead;
+
+    if(timerList->pHead == timerList->pTail == NULL) { // If empty list
+        timerList->pHead = elmt;
+        timerList->pTail = elmt;
+        return OK;
+    }
+    while(current->pNext != NULL) { // Until we reach the end of the list
+        if(elmt->nTCnt < current->nTCnt) {
+            current->pPrevious->pNext = elmt;
+            elmt->pPrevious = current->pPrevious;
+            current->pPrevious = elmt;
+            elmt.pNext = current;
+            return OK;
+        }
+        current = current->pNext;
+    }
+    current->pNext = elmt;
+    elmt->pPrevious = current;
+    return OK;
+}
