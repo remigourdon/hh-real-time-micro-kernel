@@ -25,3 +25,11 @@ exception insert_readyList(listobj* elmt) {
     elmt->pPrevious = current;
     return OK;
 }
+
+listobj* extract_readyList(void) {
+    listobj* first = readyList->pHead;
+    first->pNext->pPrevious = NULL;
+    readyList->pHead = first->pNext;
+    firs->pNext = NULL;
+    return first;
+}
