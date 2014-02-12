@@ -41,15 +41,16 @@ typedef struct {
  * The list is sorted from the lowest deadline values first.
  * 
  * @param elmt Pointer to the element to be inserted.
+ * @return     OK if success, FAIL otherwise.
  */
-void insert_readyList(listobj* elmt);
+exception insert_readyList(listobj* elmt);
 
 /**
  * @brief Extract an element from the readyList.
  *
  * The first element of the list (lowest deadline) is extracted.
  * 
- * @return Pointer to the extracted element.
+ * @return Pointer to the extracted element or null.
  */
 listobj* extract_readyList(void);
 
@@ -60,15 +61,16 @@ listobj* extract_readyList(void);
  * 
  * @param elmt  Pointer to the element to be inserted.
  * @param nTCnt Number of ticks to wait.
+ * @return      OK if success, FAIL otherwise.
  */
-void insert_timerList(listobj* elmt, uint nTCnt);
+exception insert_timerList(listobj* elmt, uint nTCnt);
 
 /**
  * @brief Extract an element from the timerList.
  *
  * The first element of the list (lowest tick counter) is extracted.
  * 
- * @return  Pointer to the extracted element.
+ * @return  Pointer to the extracted element or null.
  */
 listobj* extract_timerList(void);
 
@@ -78,8 +80,9 @@ listobj* extract_timerList(void);
  * The list is sorted from the lowest deadline values first.
  * 
  * @param elmt Pointer to the element to be inserted.
+ * @return     OK if success, FAIL otherwise.
  */
-void insert_waitingList(listobj* elmt);
+exception insert_waitingList(listobj* elmt);
 
 /**
  * @brief Extract an element from the waitingList.
@@ -87,7 +90,7 @@ void insert_waitingList(listobj* elmt);
  * The element corresponding to the parameter is extracted.
  * 
  * @param  elmt Pointer to the element to be extracted.
- * @return      Pointer to the extracted element.
+ * @return      Pointer to the extracted element or null.
  */
 listobj* extract_waitingList(listobj* elmt);
 
