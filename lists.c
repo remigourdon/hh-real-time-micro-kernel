@@ -5,7 +5,6 @@
 
 exception insert_readyList(listobj* elmt) {
     listobj* current = readyList->pHead;
-
     if(readyList->pHead == NULL) { // If empty list
         readyList->pHead = elmt;
         readyList->pTail = elmt;
@@ -39,8 +38,9 @@ listobj* extract_readyList(void) {
     return first;
 }
 
-exception insert_timerList(listobj* elmt) {
+exception insert_timerList(listobj* elmt, uint nTCnt) {
     listobj* current = timerList->pHead;
+    elmt->nTCnt = nTCnt;    // Affect value of nTCnt to elmt placeholder
     if(timerList->pHead == NULL) { // If empty list
         timerList->pHead = elmt;
         timerList->pTail = elmt;
@@ -66,17 +66,18 @@ listobj* extract_timerList(void) {
     if(first->pNext == NULL) {  // If only one element in list
         timerList->pHead = NULL;
         timerList->pTail = NULL;
-        return first;
     }
-    first->pNext->pPrevious = NULL;
-    timerList->pHead = first->pNext;
-    firs->pNext = NULL;
+    else {
+        first->pNext->pPrevious = NULL;
+        timerList->pHead = first->pNext;
+        firs->pNext = NULL;    
+    }
+    first->nTCnt = 0;
     return first;
 }
 
 exception insert_waitingList(listobj* elmt) {
     listobj* current = waitingList->pHead;
-
     if(waitingList->pHead == NULL) { // If empty list
         waitingList->pHead = elmt;
         waitingList->pTail = elmt;
