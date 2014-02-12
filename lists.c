@@ -97,3 +97,28 @@ exception insert_waitingList(listobj* elmt) {
     elmt->pPrevious = current;
     return OK;
 }
+
+listobj* extract_waitingList(listobj* elmt) {
+    if(elmt->pNext == NULL) {   // If only one element in list
+        waitingList->pHead = NULL;
+        waitingList->pTail = NULL;
+        return elmt;
+    }
+    if(elmt->pPrevious == NULL) {   // If first element in list
+        elmt->pNext->pPrevious = NULL;
+        waitingList->pHead = elmt->pNext;
+        elmt->pNext = NULL;
+        return elmt;
+    }
+    if(elmt->pNext == NULL) {   // If last element in list
+        elmt->pPrevious->pNext = NULL;
+        waitingList->pTail = elmt->pPrevious;
+        elmt->pPrevious = NULL;
+        return elmt;
+    }
+    elmt->pPrevious->pNext = elmt->pNext;
+    elmt->pNext->pPrevious = elmt->pPrevious;
+    elmt->pPrevious = NULL;
+    elmt->pNext = NULL;
+    return elmt;
+}
