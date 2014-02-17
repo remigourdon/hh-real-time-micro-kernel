@@ -1,6 +1,9 @@
 /**
  * @file lists.h
  * @brief List management system definition.
+ * @todo Modify all list traversing loops
+ *       Ex: while(elmt->Deadline < current->Deadline && current != readyList->pTail)
+ * @todo Add pHead and pTail objects at the creation of each of the lists (empty?)
  */
 
 #ifndef LISTS_H
@@ -37,9 +40,9 @@ typedef struct {
 
 /**
  * @brief Insert a new element in the readyList.
- * 
+ *
  * The list is sorted from the lowest deadline values first.
- * 
+ *
  * @param elmt Pointer to the element to be inserted.
  * @return     OK if success, FAIL otherwise.
  */
@@ -49,7 +52,7 @@ exception insert_readyList(listobj* elmt);
  * @brief Extract an element from the readyList.
  *
  * The first element of the list (lowest deadline) is extracted.
- * 
+ *
  * @return Pointer to the extracted element or NULL.
  *
  * @todo   Consider all cases (cf waitingList)
@@ -60,7 +63,7 @@ listobj* extract_readyList(void);
  * @brief Insert a new element in the timerList.
  *
  * The list is sorted from the lowest number of ticks values first.
- * 
+ *
  * @param elmt  Pointer to the element to be inserted.
  * @param nTCnt Number of ticks to wait.
  * @return      OK if success, FAIL otherwise.
@@ -71,7 +74,7 @@ exception insert_timerList(listobj* elmt, uint nTCnt);
  * @brief Extract an element from the timerList.
  *
  * The first element of the list (lowest tick counter) is extracted.
- * 
+ *
  * @return  Pointer to the extracted element or NULL.
  *
  * @todo    Consider all cases (cf waitingList)
@@ -82,7 +85,7 @@ listobj* extract_timerList(void);
  * @brief Insert a new element in the waitingList.
  *
  * The list is sorted from the lowest deadline values first.
- * 
+ *
  * @param elmt Pointer to the element to be inserted.
  * @return     OK if success, FAIL otherwise.
  */
@@ -92,7 +95,7 @@ exception insert_waitingList(listobj* elmt);
  * @brief Extract an element from the waitingList.
  *
  * The element corresponding to the parameter is extracted.
- * 
+ *
  * @param  elmt Pointer to the element to be extracted.
  * @return      Pointer to the extracted element or NULL.
  */

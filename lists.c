@@ -70,7 +70,7 @@ listobj* extract_timerList(void) {
     else {
         first->pNext->pPrevious = NULL;
         timerList->pHead = first->pNext;
-        firs->pNext = NULL;    
+        first->pNext = NULL;
     }
     first->nTCnt = 0;
     return first;
