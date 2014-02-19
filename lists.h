@@ -30,10 +30,26 @@ typedef struct {
     listobj         *pTail;     /**< Pointer to the tail of the list. */
 } list;
 
-
 ///////////////////////////////
 // FUNCTIONS TO MANAGE LISTS //
 ///////////////////////////////
+
+/**
+ * @brief Create a new empty list and return it.
+ *
+ * Initializes pHead and pTail.
+ *
+ * @return  Pointer to the new empty list.
+ */
+list* create_emptyList(void);
+
+/**
+ * @brief Destroy a list and free the memory.
+ *
+ * @param  l Pointer to the list to be destroyed.
+ * @return   OK if success, FAIL otherwise.
+ */
+exception destroy_list(list* l);
 
 /**
  * @brief Insert a new element in the readyList.
