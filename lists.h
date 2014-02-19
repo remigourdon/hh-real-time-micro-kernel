@@ -1,9 +1,6 @@
 /**
  * @file lists.h
  * @brief List management system definition.
- * @todo Modify all list traversing loops
- *       Ex: while(elmt->Deadline < current->Deadline && current != readyList->pTail)
- * @todo Add pHead and pTail objects at the creation of each of the lists (empty?)
  */
 
 #ifndef LISTS_H
@@ -55,7 +52,6 @@ exception insert_readyList(listobj* elmt);
  *
  * @return Pointer to the extracted element or NULL.
  *
- * @todo   Consider all cases (cf waitingList)
  */
 listobj* extract_readyList(void);
 
@@ -77,7 +73,6 @@ exception insert_timerList(listobj* elmt, uint nTCnt);
  *
  * @return  Pointer to the extracted element or NULL.
  *
- * @todo    Consider all cases (cf waitingList)
  */
 listobj* extract_timerList(void);
 
