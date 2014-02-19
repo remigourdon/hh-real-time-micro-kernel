@@ -18,3 +18,13 @@ list* create_emptyList(void) {
 
     return newList;
 }
+
+exception destroy_list(list* l) {
+    if(l != NULL) {
+        free(l->pHead);
+        free(l->pTail);
+        free(l);
+        return OK;
+    }
+    return FAIL;
+}
