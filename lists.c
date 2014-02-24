@@ -109,3 +109,25 @@ listobj* extract_timerList(void) {
 
     return elmt;
 }
+
+exception insert_waitingList(listobj* elmt) {
+    listobj* current = waitingList->pHead;
+
+    if(waitingList->pHead->pNext == waitingList->pTail) { // If empty list
+        waitingList->pHead->pNext     = elmt;
+        waitingList->pTail->pPrevious = elmt;
+        elmt->pPrevious             = waitingList->pHead;
+        elmt->pNext                 = waitingList->pTail;
+        return OK;
+    }
+
+    while((current->pTask->DeadLine < elmt->pTask->DeadLine) && (current != waitingList->pTail)) {
+        current = current->pNext;
+    }
+
+    elmt->pPrevious = current->pPrevious;
+    elmt->pNext = current;
+    current->pPrevious->pNext = elmt;
+    current->pPrevious = elmt;
+    return OK;
+}
