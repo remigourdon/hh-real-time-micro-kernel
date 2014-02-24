@@ -50,3 +50,20 @@ exception insert_readyList(listobj* elmt) {
     current->pPrevious = elmt;
     return OK;
 }
+
+listobj* extract_readyList(void) {
+    listobj* elmt;
+
+    if(readyList->pHead->pNext == readyList->pTail) { // If empty list
+        return NULL;
+    }
+
+    elmt = readyList->pHead->pNext;
+
+    readyList->pHead->pNext = elmt->pNext;
+    elmt->pNext->pPrevious = readyList->pHead;
+    elmt->pPrevious = NULL;
+    elmt->pNext = NULL;
+
+    return elmt;
+}
