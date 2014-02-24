@@ -67,7 +67,6 @@ exception insert_readyList(listobj* elmt);
  * The first element of the list (lowest deadline) is extracted.
  *
  * @return Pointer to the extracted element or NULL.
- *
  */
 listobj* extract_readyList(void);
 

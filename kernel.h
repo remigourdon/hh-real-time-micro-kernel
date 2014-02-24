@@ -55,39 +55,82 @@ typedef struct {
 } TCB;
 #else
 /**
- * @brief Task Control Block (TCB)
+ * @brief Task Control Block (TCB).
  */
 typedef struct {
-    void    (*PC)();                /**< Program Counter */
-    uint    *SP;                    /**< Stack Pointer */
-    uint    Context[CONTEXT_SIZE];  /**< Context placeholder */
-    uint    StackSeg[STACK_SIZE];   /**< Stack segment */
+    void    (*PC)();                /**< Program Counter. */
+    uint    *SP;                    /**< Stack Pointer. */
+    uint    Context[CONTEXT_SIZE];  /**< Context placeholder. */
+    uint    StackSeg[STACK_SIZE];   /**< Stack segment. */
     uint    DeadLine;
     uint    SPSR;
 } TCB;
 #endif
 
 /**
- * @brief Message item
+ * @brief Message item.
  */
 typedef struct msgobj {
-    char            *pData;         /**< Pointer to message data */
-    exception       Status;         /**< Message status */
-    struct l_obj    *pBlock;        /**< Pointer to blocking item */
-    struct msgobj   *pPrevious;     /**< Pointer to previous msg in mailbox */
-    struct msgobj   *pNext;         /**< Pointer to next msg in mailbox */
+    char            *pData;         /**< Pointer to message data. */
+    exception       Status;         /**< Message status. */
+    struct l_obj    *pBlock;        /**< Pointer to blocking item. */
+    struct msgobj   *pPrevious;     /**< Pointer to previous msg in mailbox. */
+    struct msgobj   *pNext;         /**< Pointer to next msg in mailbox. */
 } msg;
 
 /**
  * @brief Mailbox structure
  */
 typedef struct {
-    msg             *pHead;         /**< Pointer to the head of the mailbox */
-    msg             *pTail;         /**< Pointer to the tail of the mailbox */
-    int             nDataSize;      /**< Data size in bytes */
-    int             nMaxMessages;   /**< Maximum number of msgs */
-    int             nMessages;      /**< Current number of msgs */
-    int             nBlockedMsg;    /**< Current number of blocking msgs */
+    msg             *pHead;         /**< Pointer to the head of the mailbox. */
+    msg             *pTail;         /**< Pointer to the tail of the mailbox. */
+    int             nDataSize;      /**< Data size in bytes. */
+    int             nMaxMessages;   /**< Maximum number of msgs. */
+    int             nMessages;      /**< Current number of msgs. */
+    int             nBlockedMsg;    /**< Current number of blocking msgs. */
 } mailbox;
+
+///////////////////////////////////
+// TASK ADMINISTRATION FUNCTIONS //
+///////////////////////////////////
+
+/**
+ * @brief Intializes the kernel and its data structures.
+ *
+ * Leaves the kernel in start-up mode. The call to this function must be made
+ * before any other call is made to the kernel.
+ *
+ * @return OK if success, FAIL otherwise.
+ */
+exception init_kernel(void);
+
+/**
+ * @brief Creates a new task.
+ *
+ * If the call is made in start-up mode, only necessary data structures will be
+ * created. Otherwise, it will lead to a rescheduling and possibly a context
+ * switch.
+ *
+ * @param body      Pointer to the function holding the code of the task.
+ * @param deadline  Task's deadline that the kernel will try to meet.
+ * @return          OK if success, FAIL otherwise.
+ */
+exception create_task(void (*body)(), uint deadline);
+
+/**
+ * @brief Starts the kernel and thus the system of created tasks.
+ *
+ * Leaves the control to the task with the tightiest deadline. Therefore, it
+ * must be placed last in the application initialization code.
+ */
+void run(void);
+
+/**
+ * @brief Terminate the running task.
+ *
+ * All data structures for the task will be removed. Another task will then
+ * be scheduled for execution.
+ */
+void terminate(void);
 
 #endif
