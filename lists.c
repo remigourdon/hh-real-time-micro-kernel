@@ -131,3 +131,13 @@ exception insert_waitingList(listobj* elmt) {
     current->pPrevious = elmt;
     return OK;
 }
+
+listobj* extract_waitingList(listobj* elmt) {
+    if(elmt != NULL) {
+        elmt->pPrevious->pNext = elmt->pNext;
+        elmt->pNext->pPrevious = elmt->pPrevious;
+        elmt->pPrevious = NULL;
+        elmt->pNext = NULL;
+    }
+    return elmt;
+}
