@@ -91,3 +91,21 @@ exception insert_timerList(listobj* elmt, uint nTCnt) {
     current->pPrevious = elmt;
     return OK;
 }
+
+listobj* extract_timerList(void) {
+    listobj* elmt;
+
+    if(timerList->pHead->pNext == timerList->pTail) { // If empty list
+        return NULL;
+    }
+
+    elmt = timerList->pHead->pNext;
+    elmt->nTCnt = 0;
+
+    timerList->pHead->pNext = elmt->pNext;
+    elmt->pNext->pPrevious = timerList->pHead;
+    elmt->pPrevious = NULL;
+    elmt->pNext = NULL;
+
+    return elmt;
+}
