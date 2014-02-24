@@ -90,9 +90,9 @@ typedef struct {
     int             nBlockedMsg;    /**< Current number of blocking msgs. */
 } mailbox;
 
-///////////////////////////////////
-// TASK ADMINISTRATION FUNCTIONS //
-///////////////////////////////////
+/////////////////////////
+// TASK ADMINISTRATION //
+/////////////////////////
 
 /**
  * @brief Intializes the kernel and its data structures.
@@ -241,5 +241,14 @@ uint deadline(void);
  * @param nNew New deadline value given in number of ticks.
  */
 void set_deadline(uint nNew);
+
+///////////////
+// INTERRUPT //
+///////////////
+
+extern void isr_off(void);
+extern void isr_on(void);
+extern void SaveContext(void); // Stores DSP registers in TCB pointed to by Running
+extern void LoadContext(void); // Restores DSP registers from TCB pointed to by Running
 
 #endif
