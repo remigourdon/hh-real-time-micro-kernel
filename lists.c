@@ -67,3 +67,27 @@ listobj* extract_readyList(void) {
 
     return elmt;
 }
+
+exception insert_timerList(listobj* elmt, uint nTCnt) {
+    listobj* current = timerList->pHead;
+
+    elmt->nTCnt = nTCnt;
+
+    if(timerList->pHead->pNext == timerList->pTail) { // If empty list
+        timerList->pHead->pNext     = elmt;
+        timerList->pTail->pPrevious = elmt;
+        elmt->pPrevious             = timerList->pHead;
+        elmt->pNext                 = timerList->pTail;
+        return OK;
+    }
+
+    while((current->nTCnt < elmt->nTCnt) && (current != timerList->pTail)) {
+        current = current->pNext;
+    }
+
+    elmt->pPrevious = current->pPrevious;
+    elmt->pNext = current;
+    current->pPrevious->pNext = elmt;
+    current->pPrevious = elmt;
+    return OK;
+}
