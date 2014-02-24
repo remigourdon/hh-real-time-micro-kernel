@@ -133,4 +133,72 @@ void run(void);
  */
 void terminate(void);
 
+///////////////////
+// COMMUNICATION //
+///////////////////
+
+/**
+ * @brief Create a new mailbox.
+ *
+ * @param  nMessages Maximum number of messages in the mailbox.
+ * @param  nDataSize Size of one message in the mailbox, in bytes.
+ * @return           Pointer to the created mailbox or NULL.
+ */
+mailbox* create_mailbox(uint nMessages, uint nDataSize);
+
+/**
+ * @brief Remove the mailbox if it is empty.
+ *
+ * @param  mBox Pointer to the mailbox to be removed.
+ * @return      OK if removed, NOT_EMPTY otherwise.
+ */
+exception remove_mailbox(mailbox* mBox);
+
+/**
+ * @brief Return the current number of messages in the specified mailbox.
+ * @param  mBox Pointer to the specified mailbox.
+ * @return      Number of messages in the specified mailbox.
+ */
+int no_messages(mailbox* mBox);
+
+/**
+ * @brief Send a blocking message to the specified mailbox.
+ *
+ * @attention Blocking and non blocking messages can't be mixed in a mailbox.
+ *
+ * @param  mBox  Pointer to the specified mailbox.
+ * @param  pData Pointer to the memory area where is situated the msg data.
+ * @return       OK if success, DEADLINE_REACHED otherwise.
+ */
+exception send_wait(mailbox* mBox, void* pData);
+
+/**
+ * @brief Blocking attempt to receive a message from the specified mailbox.
+ *
+ * @param  mBox  Pointer to the specified mailbox.
+ * @param  pData Pointer to the memory area where data should be stored.
+ * @return       OK if success, DEADLINE_REACHED otherwise.
+ */
+exception receive_wait(mailbox* mBox, void* pData);
+
+/**
+ * @brief Send a non blocking message to the specified mailbox.
+ *
+ * @attention Blocking and non blocking messages can't be mixed in a mailbox.
+ *
+ * @param  mBox  Pointer to the specified mailbox.
+ * @param  pData Pointer to the memory area where is situated the msg data.
+ * @return       OK if success, FAIL otherwise.
+ */
+exception send_no_wait(mailbox* mBox, void* pData);
+
+/**
+ * @brief Non blocking attempt to receive a message from the specified mailbox.
+ *
+ * @param  mBox  Pointer to the specified mailbox.
+ * @param  pData Pointer to the memory area where data should be stored.
+ * @return       OK if success, FAIL otherwise.
+ */
+exception receive_no_wait(mailbox* mBox, void* pData);
+
 #endif
