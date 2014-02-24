@@ -201,4 +201,45 @@ exception send_no_wait(mailbox* mBox, void* pData);
  */
 exception receive_no_wait(mailbox* mBox, void* pData);
 
+////////////
+// TIMING //
+////////////
+
+/**
+ * @brief Block the calling tasks until the given number of ticks has expired.
+ *
+ * @param  nTicks Number of ticks.
+ * @return        OK if success, DEADLINE_REACHED otherwise.
+ */
+exception wait(uint nTicks);
+
+/**
+ * @brief Set the tick counter to the given value.
+ * @param no_of_ticks New value for the tick counter.
+ */
+void set_ticks(uint no_of_ticks);
+
+/**
+ * @brief Return the current value of the tick counter.
+ *
+ * @return  Current 32 bits value of the tick counter.
+ */
+uint ticks(void);
+
+/**
+ * @brief Return the deadline of the current task.
+ *
+ * @return  Deadline of the current task.
+ */
+uint deadline(void);
+
+/**
+ * @brief Set the deadline of the calling task to the new value.
+ *
+ * The task will be rescheduled and a context switch might occur.
+ *
+ * @param nNew New deadline value given in number of ticks.
+ */
+void set_deadline(uint nNew);
+
 #endif
