@@ -28,3 +28,25 @@ exception destroy_list(list* l) {
     }
     return FAIL;
 }
+
+exception insert_readyList(listobj* elmt) {
+    listobj* current = readyList->pHead;
+
+    if(readyList->pHead->pNext == readyList->pTail) { // If empty list
+        readyList->pHead->pNext     = elmt;
+        readyList->pTail->pPrevious = elmt;
+        elmt->pPrevious             = readyList->pHead;
+        elmt->pNext                 = readyList->pTail;
+        return OK;
+    }
+
+    while((current->pTask->DeadLine < elmt->pTask->DeadLine) && (current != readyList->pTail)) {
+        current = current->pNext;
+    }
+
+    elmt->pPrevious = current->pPrevious;
+    elmt->pNext = current;
+    current->pPrevious->pNext = elmt;
+    current->pPrevious = elmt;
+    return OK;
+}
