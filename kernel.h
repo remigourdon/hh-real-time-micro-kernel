@@ -251,4 +251,14 @@ extern void isr_on(void);
 extern void SaveContext(void); // Stores DSP registers in TCB pointed to by Running
 extern void LoadContext(void); // Restores DSP registers from TCB pointed to by Running
 
+//////////
+// DATA //
+//////////
+
+listobj* Running;
+
+list* runningList;
+list* timerList;
+list* waitingList;
+
 #endif
