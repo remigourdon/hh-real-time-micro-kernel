@@ -252,6 +252,12 @@ extern void SaveContext(void); // Stores DSP registers in TCB pointed to by Runn
 extern void LoadContext(void); // Restores DSP registers from TCB pointed to by Running
 
 //////////
+// IDLE //
+//////////
+
+void IDLE(void) { while(1); };
+
+//////////
 // DATA //
 //////////
 
