@@ -24,3 +24,20 @@ exception init_kernel(void) {
     // Return status
     return OK;
 }
+
+exception create_task(void (*body)(), uint deadline) {
+    // Allocate memory for TCB
+    TCB* newTask;
+    newTask = (TCB*)malloc(sizeof(TCB));
+
+    // Set deadline in TCB
+    newTask->DeadLine = deadline;
+
+    // Set TCB's PC to point to the task body
+    newTask->PC = body;
+
+    // Set TCB's SP to point to the task segment
+    newTask->SP = &(newTask->StackSeg[STACK_SIZE-1]);
+
+    //
+}
