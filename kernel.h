@@ -256,14 +256,15 @@ extern void LoadContext(void); // Restores DSP registers from TCB pointed to by 
 //////////
 
 void IDLE(void) { while(1); };
+TCB* task_IDLE;
 
 //////////
 // DATA //
 //////////
 
-listobj* Running;
+TCB* Running;
 
-list* runningList;
+list* readyList;
 list* timerList;
 list* waitingList;
 
