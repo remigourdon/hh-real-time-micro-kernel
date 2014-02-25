@@ -40,6 +40,8 @@
 #define SENDER      +1
 #define RECEIVER    -SENDER
 
+#define UINT_MAX 0xffffffff
+
 typedef int             exception;
 typedef int             bool;
 typedef unsigned int    uint;
