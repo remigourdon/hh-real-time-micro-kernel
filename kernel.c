@@ -4,7 +4,6 @@
  */
 
 #include "kernel.h"
-#include "lists.h"
 
 exception init_kernel(void) {
     set_ticks(0);   // Set tick counter to zero
@@ -38,6 +37,5 @@ exception create_task(void (*body)(), uint deadline) {
 
     // Set TCB's SP to point to the task segment
     newTask->SP = &(newTask->StackSeg[STACK_SIZE-1]);
-
-    //
 }
+
