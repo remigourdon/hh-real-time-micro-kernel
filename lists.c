@@ -29,6 +29,8 @@ exception insert_readyList(listobj* elmt) {
 
     current = readyList->pHead;
 
+    ist_off();
+
     if(readyList->pHead->pNext == readyList->pTail) { // If empty list
         readyList->pHead->pNext     = elmt;
         readyList->pTail->pPrevious = elmt;
@@ -38,6 +40,7 @@ exception insert_readyList(listobj* elmt) {
         // Update Running pointer
         Running = readyList->pHead->pNext->TCB;
 
+        isr_on();
         return OK;
     }
 
@@ -53,13 +56,17 @@ exception insert_readyList(listobj* elmt) {
     // Update Running pointer
     Running = readyList->pHead->pNext->TCB;
 
+    isr_on();
     return OK;
 }
 
 listobj* extract_readyList(void) {
     listobj* elmt;
 
+    isr_off();
+
     if(readyList->pHead->pNext == readyList->pTail) { // If empty list
+        isr_on();
         return NULL;
     }
 
@@ -73,11 +80,14 @@ listobj* extract_readyList(void) {
     // Update Running pointer
     Running = readyList->pHead->pNext->TCB;
 
+    isr_on();
     return elmt;
 }
 
 exception insert_timerList(listobj* elmt, uint nTCnt) {
     listobj* current = timerList->pHead;
+
+    isr_off();
 
     elmt->nTCnt = nTCnt;
 
@@ -86,6 +96,8 @@ exception insert_timerList(listobj* elmt, uint nTCnt) {
         timerList->pTail->pPrevious = elmt;
         elmt->pPrevious             = timerList->pHead;
         elmt->pNext                 = timerList->pTail;
+
+        isr_on();
         return OK;
     }
 
@@ -97,13 +109,18 @@ exception insert_timerList(listobj* elmt, uint nTCnt) {
     elmt->pNext = current;
     current->pPrevious->pNext = elmt;
     current->pPrevious = elmt;
+
+    isr_on();
     return OK;
 }
 
 listobj* extract_timerList(void) {
     listobj* elmt;
 
+    isr_off();
+
     if(timerList->pHead->pNext == timerList->pTail) { // If empty list
+        isr_on();
         return NULL;
     }
 
@@ -115,17 +132,22 @@ listobj* extract_timerList(void) {
     elmt->pPrevious = NULL;
     elmt->pNext = NULL;
 
+    isr_on();
     return elmt;
 }
 
 exception insert_waitingList(listobj* elmt) {
     listobj* current = waitingList->pHead;
 
+    isr_off();
+
     if(waitingList->pHead->pNext == waitingList->pTail) { // If empty list
         waitingList->pHead->pNext     = elmt;
         waitingList->pTail->pPrevious = elmt;
         elmt->pPrevious             = waitingList->pHead;
         elmt->pNext                 = waitingList->pTail;
+
+        isr_on();
         return OK;
     }
 
@@ -137,15 +159,21 @@ exception insert_waitingList(listobj* elmt) {
     elmt->pNext = current;
     current->pPrevious->pNext = elmt;
     current->pPrevious = elmt;
+
+    isr_on();
     return OK;
 }
 
 listobj* extract_waitingList(listobj* elmt) {
+    isr_off();
+
     if(elmt != NULL) {
         elmt->pPrevious->pNext = elmt->pNext;
         elmt->pNext->pPrevious = elmt->pPrevious;
         elmt->pPrevious = NULL;
         elmt->pNext = NULL;
     }
+
+    isr_on();
     return elmt;
 }
