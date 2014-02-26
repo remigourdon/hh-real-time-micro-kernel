@@ -80,8 +80,17 @@ void run(void) {
 }
 
 void terminate(void) {
+    listobj* terminatingElmt;
+
     // Remove running task from readyList
-    extract_readyList();
+    terminatingElmt = extract_readyList();
+
+    // Destroy structures dynamically allocated
+    isr_off();
+    free(terminatingElmt->pMessage); /// @todo Check if it is the right way to do it
+    free(terminatingElmt->pTask);
+    free(terminatingElmt);
+    isr_on();
 
     LoadContext();
 }
