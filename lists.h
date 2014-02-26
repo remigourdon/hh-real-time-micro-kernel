@@ -44,14 +44,14 @@ typedef struct {
 list* create_emptyList(void);
 
 /**
- * @brief Insert a new element in the readyList.
+ * @brief Insert a new task in the readyList.
  *
  * The list is sorted from the lowest deadline values first.
  *
- * @param elmt Pointer to the element to be inserted.
+ * @param elmt Pointer to the task to be inserted.
  * @return     OK if success, FAIL otherwise.
  */
-exception insert_readyList(listobj* elmt);
+exception insert_readyList(TCB* task);
 
 /**
  * @brief Extract an element from the readyList.
