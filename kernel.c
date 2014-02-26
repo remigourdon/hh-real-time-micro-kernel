@@ -25,7 +25,7 @@ exception init_kernel(void) {
     task_IDLE->DeadLine = UINT_MAX;
     task_IDLE->PC = IDLE;
     task_IDLE->SP = &(task_IDLE->StackSeg[STACK_SIZE-1]);
-    Running = task_IDLE;
+    insert_readyList(task_IDLE);
 
     // Set the kernel in startup mode
     MODE = INIT;
