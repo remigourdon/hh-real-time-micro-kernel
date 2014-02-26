@@ -24,36 +24,35 @@ list* create_emptyList(void) {
     return newList;
 }
 
-exception insert_readyList(TCB* task) {
-    // Create new listobj
-    listobj* newElmt;
-    // BEGIN CRITICAL ZONE
-    newElmt = (listobj*)malloc(sizeof(listobj));
-    // END CRITICAL ZONE
-    newElmt->pTask      = task;
-    newElmt->nTCnt      = 0;
-    newElmt->pMessage   = NULL;
-    newElmt->pPrevious  = NULL;
-    newElmt->pNext      = NULL;
+exception insert_readyList(listobj* elmt) {
+    listobj* current;
 
-    listobj* current = readyList->pHead;
+    current = readyList->pHead;
 
     if(readyList->pHead->pNext == readyList->pTail) { // If empty list
-        readyList->pHead->pNext     = newElmt;
-        readyList->pTail->pPrevious = newElmt;
-        newElmt->pPrevious             = readyList->pHead;
-        newElmt->pNext                 = readyList->pTail;
+        readyList->pHead->pNext     = elmt;
+        readyList->pTail->pPrevious = elmt;
+        elmt->pPrevious             = readyList->pHead;
+        elmt->pNext                 = readyList->pTail;
+
+        // Update Running pointer
+        Running = readyList->pHead->pNext->TCB;
+
         return OK;
     }
 
-    while((current->pTask->DeadLine < newElmt->pTask->DeadLine) && (current != readyList->pTail)) {
+    while((current->pTask->DeadLine < elmt->pTask->DeadLine) && (current != readyList->pTail)) {
         current = current->pNext;
     }
 
-    newElmt->pPrevious = current->pPrevious;
-    newElmt->pNext = current;
-    current->pPrevious->pNext = newElmt;
-    current->pPrevious = newElmt;
+    elmt->pPrevious = current->pPrevious;
+    elmt->pNext = current;
+    current->pPrevious->pNext = elmt;
+    current->pPrevious = elmt;
+
+    // Update Running pointer
+    Running = readyList->pHead->pNext->TCB;
+
     return OK;
 }
 
@@ -70,6 +69,9 @@ listobj* extract_readyList(void) {
     elmt->pNext->pPrevious = readyList->pHead;
     elmt->pPrevious = NULL;
     elmt->pNext = NULL;
+
+    // Update Running pointer
+    Running = readyList->pHead->pNext->TCB;
 
     return elmt;
 }
