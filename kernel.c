@@ -14,7 +14,7 @@ exception init_kernel(void) {
     waitingList = create_emptyList();
 
     // Create an idle task
-    create_task(IDLE, UINT_MAX);
+    create_task(IDLE, UINT_MAX); /// @todo Test return code
 
     // Set the kernel in startup mode
     Running = task_IDLE;
@@ -27,7 +27,12 @@ exception init_kernel(void) {
 exception create_task(void (*body)(), uint deadline) {
     // Allocate memory for TCB
     TCB* newTask;
+
+    // BEGIN CRITICAL ZONE
+    isr_off();
     newTask = (TCB*)malloc(sizeof(TCB));
+    isr_on();
+    // END CRITICAL ZONE
 
     // Set deadline in TCB
     newTask->DeadLine = deadline;

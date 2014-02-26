@@ -5,10 +5,15 @@
 
 list* create_emptyList(void) {
     list* newList;
+
+    // BEGIN CRITICAL ZONE
+    isr_off();
     newList = (list*)malloc(sizeof(list));
 
     newList->pHead = (listobj*)malloc(sizeof(listobj));
     newList->pTail = (listobj*)malloc(sizeof(listobj));
+    isr_on();
+    // END CRITICAL ZONE
 
     newList->pHead->pPrevious = NULL;
     newList->pHead->pNext     = newList->pTail;
@@ -21,9 +26,14 @@ list* create_emptyList(void) {
 
 exception destroy_list(list* l) {
     if(l != NULL) {
+        // BEGIN CRITICAL ZONE
+        isr_off();
         free(l->pHead);
         free(l->pTail);
         free(l);
+        isr_on();
+        // END CRITICAL ZONE
+
         return OK;
     }
     return FAIL;
