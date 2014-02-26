@@ -13,12 +13,22 @@ exception init_kernel(void) {
     timingList = create_emptyList();
     waitingList = create_emptyList();
 
-    // Create an idle task
-    create_task(IDLE, UINT_MAX); /// @todo Test return code
+    // Create IDLE task
+    TCB* task_IDLE;
+
+    /// BEGIN CRITICAL ZONE
+    isr_off();
+    task_IDLE = (TCB*)malloc(sizeof(TCB));
+    isr_on();
+    /// END CRITICAL ZONE
+
+    task_IDLE->DeadLine = UINT_MAX;
+    task_IDLE->PC = IDLE;
+    task_IDLE->SP = &(task_IDLE->StackSeg[STACK_SIZE-1]);
+    Running = task_IDLE;
 
     // Set the kernel in startup mode
-    Running = task_IDLE;
-    LoadContext();
+    MODE = INIT;
 
     // Return status
     return OK;
