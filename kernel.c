@@ -25,6 +25,10 @@ exception init_kernel(void) {
 }
 
 exception create_task(void (*body)(), uint deadline) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
     // Allocate memory for TCB
     TCB* newTask;
 
@@ -42,5 +46,20 @@ exception create_task(void (*body)(), uint deadline) {
 
     // Set TCB's SP to point to the task segment
     newTask->SP = &(newTask->StackSeg[STACK_SIZE-1]);
+
+    if(MODE == INIT) {      // If startup mode
+        insert_readyList(newTask);
+        return OK;
+    }
+    else {
+        isr_off();
+        SaveContext();
+        if(first == TRUE) {     // If first execution
+            first = FALSE;
+            insert_readyList(newTask);
+            LoadContext();
+        }
+    }
+    return OK;
 }
 
