@@ -69,5 +69,12 @@ exception create_task(void (*body)(), uint deadline) {
     return OK;
 }
 
+void run(void) {
+    /// @todo Initialize interrupt timer!!
 
+    // Set the kernel in running mode
+    MODE = RUNNING;
 
+    isr_on();
+    LoadContext();
+}
