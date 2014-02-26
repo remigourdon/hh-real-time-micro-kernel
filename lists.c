@@ -24,21 +24,6 @@ list* create_emptyList(void) {
     return newList;
 }
 
-exception destroy_list(list* l) {
-    if(l != NULL) {
-        // BEGIN CRITICAL ZONE
-        isr_off();
-        free(l->pHead);
-        free(l->pTail);
-        free(l);
-        isr_on();
-        // END CRITICAL ZONE
-
-        return OK;
-    }
-    return FAIL;
-}
-
 exception insert_readyList(listobj* elmt) {
     listobj* current = readyList->pHead;
 
