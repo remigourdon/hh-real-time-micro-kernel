@@ -269,4 +269,6 @@ list* readyList;
 list* timerList;
 list* waitingList;
 
+int MODE = -1;
+
 #endif
