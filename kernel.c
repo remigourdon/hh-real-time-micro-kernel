@@ -78,3 +78,10 @@ void run(void) {
     isr_on();
     LoadContext();
 }
+
+void terminate(void) {
+    // Remove running task from readyList
+    extract_readyList();
+
+    LoadContext();
+}
