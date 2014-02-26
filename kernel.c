@@ -6,29 +6,19 @@
 #include "kernel.h"
 
 exception init_kernel(void) {
-    set_ticks(0);   // Set tick counter to zero
+    // Set tick counter to zero
+    set_ticks(0);
 
     // Create necessary data structures
     readyList = create_emptyList();
     timingList = create_emptyList();
     waitingList = create_emptyList();
 
-    // Create IDLE task
-    TCB* task_IDLE;
-
-    /// BEGIN CRITICAL ZONE
-    isr_off();
-    task_IDLE = (TCB*)malloc(sizeof(TCB));
-    isr_on();
-    /// END CRITICAL ZONE
-
-    task_IDLE->DeadLine = UINT_MAX;
-    task_IDLE->PC = IDLE;
-    task_IDLE->SP = &(task_IDLE->StackSeg[STACK_SIZE-1]);
-    insert_readyList(task_IDLE);
-
     // Set the kernel in startup mode
     MODE = INIT;
+
+    // Create an IDLE task
+    create_task(IDLE, UINT_MAX);
 
     // Return status
     return OK;
