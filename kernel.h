@@ -31,14 +31,14 @@
 #define INIT    !RUNNING
 
 #define FAIL    0
-#define SUCCESS !FAIL
-#define OK      !FAIL
+#define SUCCESS 1
+#define OK      1
 
 #define DEADLINE_REACHED    0
 #define NOT_EMPTY           0
 
 #define SENDER      +1
-#define RECEIVER    -SENDER
+#define RECEIVER    -1
 
 #define UINT_MAX 0xffffffff
 
