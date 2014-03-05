@@ -119,3 +119,19 @@ mailbox* create_mailbox(uint nMessages, uint nDataSize) {
 
     return newMailbox;
 }
+
+exception remove_mailbox(mailbox* mBox) {
+    if(mBox->nMessages == 0 && mBox->nBlockedMsg == 0) { // If mBox is empty
+        // BEGIN CRITICAL ZONE
+        isr_off();
+        free(mBox->pHead);
+        free(mBox->pTail);
+        free(mBox);
+        isr_on();
+        // END CRITICAL ZONE
+        return OK;
+    }
+    else {
+        return NOT_EMPTY;
+    }
+}
