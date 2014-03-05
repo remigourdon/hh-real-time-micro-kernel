@@ -94,3 +94,28 @@ void terminate(void) {
 
     LoadContext();
 }
+
+mailbox* create_mailbox(uint nMessages, uint nDataSize) {
+    // Allocate memory for the new mailbox
+    mailbox* newMailbox;
+    // BEGIN CRITICAL ZONE
+    isr_off();
+    newMailbox = (*mailbox)malloc(sizeof(mailbox));
+    newMailbox->pHead = (msgobj*)malloc(sizeof(msgobj));
+    newMailbox->pTail = (msgobj*)malloc(sizeof(msgobj));
+    isr_on();
+    // END CRITICAL ZONE
+
+    // Initialize mailbox structure
+    newMailbox->pHead->pPrevious = NULL;
+    newMailbox->pHead->pNext     = newMailbox->pTail;
+    newMailbox->pTail->pNext     = NULL;
+    newMailbox->pTail->pPrevious = newMailbox->pHead;
+
+    newMailbox->nDataSize        = nDataSize;
+    newMailbox->nMaxMessages     = nMessages;
+    newMailbox->nMessages        = 0;   // Current nb of messages is zero
+    newMailbox->nBlockedMsg      = 0;   // Current nb of blocked msg is zero
+
+    return newMailbox;
+}
