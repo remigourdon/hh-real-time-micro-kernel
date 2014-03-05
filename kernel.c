@@ -135,3 +135,7 @@ exception remove_mailbox(mailbox* mBox) {
         return NOT_EMPTY;
     }
 }
+
+int no_messages(mailbox* mBox) {
+    return mBox->nMessages + mBox->nBlockedMsg; /// @todo Check if it is correct way
+}
