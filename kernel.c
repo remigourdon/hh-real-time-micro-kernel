@@ -165,3 +165,7 @@ exception wait(uint nTicks) {
     }
     return OK;
 }
+
+uint deadline(void) {
+    return Running->DeadLine;
+}
