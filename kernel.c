@@ -169,3 +169,26 @@ exception wait(uint nTicks) {
 uint deadline(void) {
     return Running->DeadLine;
 }
+
+void set_deadline(uint nNew) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
+    // Temporary listobj handler
+    listobj* elmt;
+
+    isr_off();
+    SaveContext();
+    if(first == TRUE) {
+        first = FALSE;
+        Running->DeadLine = nNew; /// @todo Verify that
+
+        // Reschedule readyList
+        if(nNew > readyList->pHead->pNext->pNext) { // If running deadline not the shortest anymore
+            elmt = extract_readyList();
+            insert_readyList(elmt);
+        }
+        LoadContext();
+    }
+}
