@@ -139,3 +139,29 @@ exception remove_mailbox(mailbox* mBox) {
 int no_messages(mailbox* mBox) {
     return mBox->nMessages + mBox->nBlockedMsg; /// @todo Check if it is correct way
 }
+
+exception wait(uint nTicks) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
+    listobj* elmt;
+
+    isr_off();
+    SaveContext();
+    if(first == TRUE) {     // If first execution
+        first = FALSE;
+        elmt = extract_readyList();     // Remove from readyList
+        insert_timerList(elmt, nTicks); // Move to timerList
+        LoadContext();                  // Load new context
+    }
+    else {
+        if(ticks() > Running->DeadLine) { /// @todo Verify that
+            return DEADLINE_REACHED;
+        }
+        else {
+            return OK;
+        }
+    }
+    return OK;
+}
