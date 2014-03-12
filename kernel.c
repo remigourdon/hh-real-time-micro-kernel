@@ -162,6 +162,7 @@ exception send_wait(mailbox* mBox, void* pData) {
         else {
             // Allocate a message structure
             msg = (msgobj*)malloc(sizeof(msgobj));
+            // Copy data to the message
             msg->pData = pData;
 
             // Add message to the mailbox
@@ -208,10 +209,10 @@ exception receive_wait(mailbox* mBox, void* pData) {
         first = FALSE;
         if() {  // If send message is waiting
             if() {  // If send message was of type wait
-
+                // Move sending task to readyList
             }
             else {
-
+                // Free senders data area
             }
         }
         else {
@@ -242,6 +243,67 @@ exception receive_wait(mailbox* mBox, void* pData) {
             return OK;
         }
     }
+}
+
+exception send_no_wait(mailbox* mBox, void* pData) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
+    // Message structure placeholder
+    msgobj* msg;
+
+    isr_off();
+    SaveContext();
+
+    if(first == TRUE) {
+        first = FALSE;
+        if() {  // If receiving task is waiting
+
+        }
+        else {
+            // Allocate a message structure
+            msg = (msgobj*)malloc(sizeof(msgobj));
+            // Copy data to the message
+            msg->pData = pData;
+
+            if(no_messages(mBox) >= mBox->nMaxMessages) { // If mailbox is full
+                // Remove oldest message structure
+            }
+
+            // Add message to the mailbox
+            /// @todo Mailbox are FIFO or LIFO???
+        }
+    }
+    return OK;
+}
+
+exception receive_no_wait(mailbox* mBox, void* pData) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
+    // Message structure placeholder
+    msgobj* msg;
+
+    isr_off();
+    SaveContext();
+
+    if(first == TRUE) {
+        first = FALSE;
+        if() {  // If send message is waiting
+            if() {  // If send message was of type wait
+                // Move sending task to readyList
+            }
+            else {
+                // Free senders data area
+            }
+        }
+        LoadContext();
+    }
+
+    // Return status on received message
+    return OK; /// @todo Check what means the status in the message structure!
 }
 
 exception wait(uint nTicks) {
