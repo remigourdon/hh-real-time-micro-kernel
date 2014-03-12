@@ -174,7 +174,7 @@ exception send_wait(mailbox* mBox, void* pData) {
         }
         LoadContext();
     }
-    else {  /// @todo How does the sending task end up in the runningList again??
+    else {
         if(ticks() > Running->DeadLine) {  // If deadline is reached
             // BEGIN CRITICAL ZONE
             isr_off();
@@ -228,7 +228,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
         }
         LoadContext();
     }
-    else {  /// @todo How does the receiving task end up in the runningList again??
+    else {
         if(ticks() > Running->DeadLine) {   // If deadline is reached
             // BEGIN CRITICAL ZONE
             isr_off();
@@ -322,7 +322,7 @@ exception wait(uint nTicks) {
         LoadContext();                  // Load new context
     }
     else {
-        if(ticks() > Running->DeadLine) { /// @todo Verify that
+        if(ticks() >= Running->DeadLine) { /// @todo Verify that
             return DEADLINE_REACHED;
         }
         else {
@@ -356,5 +356,30 @@ void set_deadline(uint nNew) {
             insert_readyList(elmt);
         }
         LoadContext();
+    }
+}
+
+void TimerInt(void) {
+    // Temporary listobj placeholder
+    listobj* elmt;
+
+    TC++;
+
+    // Check the timerList for tasks that are ready for execution
+    // Move these to readyList
+    // Loop until first elmt ticks value superior to current TC value or list is empty
+    while(ticks() >= timerList->pHead->pNext->nTCnt || timerList->pHead->pNext == timerList->pTail) {
+        elmt = extract_timerList();
+        insert_readyList(elmt);
+    }
+
+    // Check the waitingList for tasks that have expired deadlines
+    // Move these to readyList and clean up their Mailbox entry
+    // Loop until first elmt deadline superior to current TC value or list is empty
+    while(ticks() >= waitingList->pHead->pNext->pTask->DeadLine || waitingList->pHead->pNext == waitingList->pTail) {
+        elmt = extract_waitingList(waitingList->pHead->pNext);
+        insert_readyList(elmt);
+        // Clean up their Mailbox entry
+
     }
 }

@@ -89,7 +89,7 @@ exception insert_timerList(listobj* elmt, uint nTCnt) {
 
     isr_off();
 
-    elmt->nTCnt = nTCnt;
+    elmt->nTCnt = ticks() + nTCnt; /// @todo Affect "nTCnt" directly or "ticks() + nTCnt"?
 
     if(timerList->pHead->pNext == timerList->pTail) { // If empty list
         timerList->pHead->pNext     = elmt;

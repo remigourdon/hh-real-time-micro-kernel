@@ -244,6 +244,14 @@ uint deadline(void);
  */
 void set_deadline(uint nNew);
 
+/**
+ * @brief Increment the tick counter.
+ *
+ * @attention This function is called by an ISR and is not available
+ *            for the user to call.
+ */
+void TimerInt(void);
+
 ///////////////
 // INTERRUPT //
 ///////////////
@@ -270,5 +278,7 @@ list* timerList;
 list* waitingList;
 
 int MODE = -1;
+
+uint TC;
 
 #endif

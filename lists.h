@@ -17,7 +17,7 @@
  */
 typedef struct l_obj {
     TCB             *pTask;     /**< Pointer to the task function. */
-    uint            nTCnt;      /**< Tick counter. */
+    uint            nTCnt;      /**< Ticks value. */
     msg             *pMessage;
     struct l_obj    *pPrevious; /**< Pointer to previous object in list. */
     struct l_obj    *pNext;     /**< Pointer to next object in list. */
