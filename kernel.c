@@ -550,7 +550,7 @@ void set_deadline(uint nNew) {
         Running->DeadLine = nNew; /// @todo Verify that
 
         // Reschedule readyList
-        if(nNew > readyList->pHead->pNext->pNext) { // If running deadline not the shortest anymore
+        if(nNew > readyList->pHead->pNext->pNext->pTask->DeadLine) { // If running deadline not the shortest anymore
             elmt = extract_readyList();
             insert_readyList(elmt);
         }
