@@ -100,7 +100,7 @@ mailbox* create_mailbox(uint nMessages, uint nDataSize) {
     mailbox* newMailbox;
     // BEGIN CRITICAL ZONE
     isr_off();
-    newMailbox = (*mailbox)malloc(sizeof(mailbox));
+    newMailbox = (mailbox*)malloc(sizeof(mailbox));
     newMailbox->pHead = (msgobj*)malloc(sizeof(msgobj));
     newMailbox->pTail = (msgobj*)malloc(sizeof(msgobj));
     isr_on();
@@ -138,6 +138,110 @@ exception remove_mailbox(mailbox* mBox) {
 
 int no_messages(mailbox* mBox) {
     return mBox->nMessages + mBox->nBlockedMsg; /// @todo Check if it is correct way
+}
+
+exception send_wait(mailbox* mBox, void* pData) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
+    // Temporary placeholder for listobj
+    listobj* elmt;
+
+    // Message structure placeholder
+    msgobj* msg;
+
+    isr_off();
+    SaveContext();
+
+    if(first == TRUE) {
+        first = FALSE;
+        if() {  // If receiving task is waiting
+
+        }
+        else {
+            // Allocate a message structure
+            msg = (msgobj*)malloc(sizeof(msgobj));
+            msg->pData = pData;
+
+            // Add message to the mailbox
+            /// @todo Mailbox are FIFO or LIFO???
+
+            // Move sending task from readyList to waitingList
+            elmt = extract_readyList();
+            insert_waitingList(elmt);
+        }
+        LoadContext();
+    }
+    else {  /// @todo How does the sending task end up in the runningList again??
+        if(ticks() > Running->DeadLine) {  // If deadline is reached
+            // BEGIN CRITICAL ZONE
+            isr_off();
+            free(msg);
+            // Dicreases blocked msg counter
+            mBox->nBlockedMsg--;
+            isr_on();
+            // END CRITICAL ZONE
+            return DEADLINE_REACHED;
+        }
+        else {
+            return OK;
+        }
+    }
+}
+
+exception receive_wait(mailbox* mBox, void* pData) {
+    // Variable dedicated to avoiding looping after context switching
+    // The variable is saved in the stack of the current running task (volatile)
+    volatile int first = TRUE;
+
+    // Temporary placeholder for listobj
+    listobj* elmt;
+
+    // Message structure placeholder
+    msgobj* msg;
+
+    isr_off();
+    SaveContext();
+
+    if(first == TRUE) {
+        first = FALSE;
+        if() {  // If send message is waiting
+            if() {  // If send message was of type wait
+
+            }
+            else {
+
+            }
+        }
+        else {
+            // Allocate a message structure
+            msg = (msgobj*)malloc(sizeof(msgobj));
+
+            // Add message to the mailbox
+            /// @todo Mailbox are FIFO or LIFO???
+
+            // Move receiving task from readyList to waitingList
+            elmt = extract_readyList();
+            insert_waitingList(elmt);
+        }
+        LoadContext();
+    }
+    else {  /// @todo How does the receiving task end up in the runningList again??
+        if(ticks() > Running->DeadLine) {   // If deadline is reached
+            // BEGIN CRITICAL ZONE
+            isr_off();
+            free(msg);
+            // Increases blocked msg counter
+            mBox->nBlockedMsg++;
+            isr_on();
+            // END CRITICAL ZONE
+            return DEADLINE_REACHED;
+        }
+        else {
+            return OK;
+        }
+    }
 }
 
 exception wait(uint nTicks) {
