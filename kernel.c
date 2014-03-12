@@ -194,7 +194,7 @@ exception init_kernel(void) {
 
     // Create necessary data structures
     readyList = create_emptyList();
-    timingList = create_emptyList();
+    timerList = create_emptyList();
     waitingList = create_emptyList();
 
     // Set the kernel in startup mode
