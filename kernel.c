@@ -35,7 +35,7 @@ exception insert_readyList(listobj* elmt) {
 
     current = readyList->pHead;
 
-    ist_off();
+    isr_off();
 
     if(readyList->pHead->pNext == readyList->pTail) { // If empty list
         readyList->pHead->pNext     = elmt;
@@ -44,7 +44,7 @@ exception insert_readyList(listobj* elmt) {
         elmt->pNext                 = readyList->pTail;
 
         // Update Running pointer
-        Running = readyList->pHead->pNext->TCB;
+        Running = readyList->pHead->pNext->pTask;
 
         isr_on();
         return OK;
@@ -60,7 +60,7 @@ exception insert_readyList(listobj* elmt) {
     current->pPrevious = elmt;
 
     // Update Running pointer
-    Running = readyList->pHead->pNext->TCB;
+    Running = readyList->pHead->pNext->pTask;
 
     isr_on();
     return OK;
@@ -84,7 +84,7 @@ listobj* extract_readyList(void) {
     elmt->pNext = NULL;
 
     // Update Running pointer
-    Running = readyList->pHead->pNext->TCB;
+    Running = readyList->pHead->pNext->pTask;
 
     isr_on();
     return elmt;
