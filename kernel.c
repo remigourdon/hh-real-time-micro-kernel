@@ -288,8 +288,8 @@ mailbox* create_mailbox(uint nMessages, uint nDataSize) {
     // BEGIN CRITICAL ZONE
     isr_off();
     newMailbox = (mailbox*)malloc(sizeof(mailbox));
-    newMailbox->pHead = (msgobj*)malloc(sizeof(msgobj));
-    newMailbox->pTail = (msgobj*)malloc(sizeof(msgobj));
+    newMailbox->pHead = (msg*)malloc(sizeof(msg));
+    newMailbox->pTail = (msg*)malloc(sizeof(msg));
     isr_on();
     // END CRITICAL ZONE
 
@@ -336,7 +336,7 @@ exception send_wait(mailbox* mBox, void* pData) {
     listobj* elmt;
 
     // Message structure placeholder
-    msgobj* msg;
+    msg* message;
 
     isr_off();
     SaveContext();
@@ -348,9 +348,9 @@ exception send_wait(mailbox* mBox, void* pData) {
         }
         else {
             // Allocate a message structure
-            msg = (msgobj*)malloc(sizeof(msgobj));
+            message = (msg*)malloc(sizeof(msg));
             // Copy data to the message
-            msg->pData = pData;
+            message->pData = pData;
 
             // Add message to the mailbox
             /// @todo Mailbox are FIFO or LIFO???
@@ -365,7 +365,7 @@ exception send_wait(mailbox* mBox, void* pData) {
         if(ticks() > Running->DeadLine) {  // If deadline is reached
             // BEGIN CRITICAL ZONE
             isr_off();
-            free(msg);
+            free(message);
             // Dicreases blocked msg counter
             mBox->nBlockedMsg--;
             isr_on();
@@ -387,7 +387,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
     listobj* elmt;
 
     // Message structure placeholder
-    msgobj* msg;
+    msg* message;
 
     isr_off();
     SaveContext();
@@ -404,7 +404,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
         }
         else {
             // Allocate a message structure
-            msg = (msgobj*)malloc(sizeof(msgobj));
+            message = (msg*)malloc(sizeof(msg));
 
             // Add message to the mailbox
             /// @todo Mailbox are FIFO or LIFO???
@@ -419,7 +419,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
         if(ticks() > Running->DeadLine) {   // If deadline is reached
             // BEGIN CRITICAL ZONE
             isr_off();
-            free(msg);
+            free(message);
             // Increases blocked msg counter
             mBox->nBlockedMsg++;
             isr_on();
@@ -438,7 +438,7 @@ exception send_no_wait(mailbox* mBox, void* pData) {
     volatile int first = TRUE;
 
     // Message structure placeholder
-    msgobj* msg;
+    msg* message;
 
     isr_off();
     SaveContext();
@@ -450,9 +450,9 @@ exception send_no_wait(mailbox* mBox, void* pData) {
         }
         else {
             // Allocate a message structure
-            msg = (msgobj*)malloc(sizeof(msgobj));
+            message = (msg*)malloc(sizeof(msg));
             // Copy data to the message
-            msg->pData = pData;
+            message->pData = pData;
 
             if(no_messages(mBox) >= mBox->nMaxMessages) { // If mailbox is full
                 // Remove oldest message structure
@@ -469,9 +469,6 @@ exception receive_no_wait(mailbox* mBox, void* pData) {
     // Variable dedicated to avoiding looping after context switching
     // The variable is saved in the stack of the current running task (volatile)
     volatile int first = TRUE;
-
-    // Message structure placeholder
-    msgobj* msg;
 
     isr_off();
     SaveContext();
