@@ -332,6 +332,17 @@ exception wait(uint nTicks) {
     return OK;
 }
 
+void set_ticks(uint no_of_ticks) {
+    // Modify the TC value only if the new value is superior to the current one
+    if(no_of_ticks > ticks()) {
+        TC = no_of_ticks;
+    }
+}
+
+uint ticks(void) {
+    return TC;
+}
+
 uint deadline(void) {
     return Running->DeadLine;
 }
