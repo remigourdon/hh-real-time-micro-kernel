@@ -349,6 +349,8 @@ exception send_wait(mailbox* mBox, void* pData) {
         else {
             // Allocate a message structure
             message = (msg*)malloc(sizeof(msg));
+            message->pBlock = readyList->pHead->pNext;
+            message->Status = SENDER;
             // Copy data to the message
             message->pData = pData;
 
@@ -405,6 +407,8 @@ exception receive_wait(mailbox* mBox, void* pData) {
         else {
             // Allocate a message structure
             message = (msg*)malloc(sizeof(msg));
+            message->pBlock = readyList->pHead->pNext;
+            message->Status = RECEIVER;
 
             // Add message to the mailbox
             /// @todo Mailbox are FIFO or LIFO???
@@ -451,6 +455,8 @@ exception send_no_wait(mailbox* mBox, void* pData) {
         else {
             // Allocate a message structure
             message = (msg*)malloc(sizeof(msg));
+            message->pBlock = readyList->pHead->pNext;
+            message->Status = SENDER;
             // Copy data to the message
             message->pData = pData;
 
