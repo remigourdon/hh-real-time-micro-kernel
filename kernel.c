@@ -361,7 +361,7 @@ exception send_wait(mailbox* mBox, void* pData) {
             message->pPrevious->pNext = message->pNext;
             message->pNext->pPrevious = message->pPrevious;
             mBox->nMessages     += SENDER;
-            mBox->nBlockedMsg   += SENDER;
+            //mBox->nBlockedMsg   += SENDER;
 
             // Move receiving task to readyList
             elmt = extract_waitingList(message->pBlock);
@@ -381,7 +381,7 @@ exception send_wait(mailbox* mBox, void* pData) {
             mBox->pHead->pNext              = message;
             message->pPrevious              = mBox->pHead;
             mBox->nMessages     += SENDER;
-            mBox->nBlockedMsg   += SENDER;
+            //mBox->nBlockedMsg   += SENDER;
 
             // Move sending task from readyList to waitingList
             elmt = extract_readyList();
@@ -395,7 +395,7 @@ exception send_wait(mailbox* mBox, void* pData) {
             message->pPrevious->pNext = message->pNext;
             message->pNext->pPrevious = message->pPrevious;
             mBox->nMessages     += RECEIVER;
-            mBox->nBlockedMsg   += RECEIVER;
+            //mBox->nBlockedMsg   += RECEIVER;
 
             // BEGIN CRITICAL ZONE
             isr_off();
@@ -437,7 +437,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
             message->pPrevious->pNext = message->pNext;
             message->pNext->pPrevious = message->pPrevious;
             mBox->nMessages     += RECEIVER;
-            mBox->nBlockedMsg   += RECEIVER;
+            //mBox->nBlockedMsg   += RECEIVER;
 
             if(message->pBlock != NULL) {  // If send message was of type wait
                 // Move sending task to readyList
@@ -468,7 +468,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
             mBox->pHead->pNext              = message;
             message->pPrevious              = mBox->pHead;
             mBox->nMessages     += RECEIVER;
-            mBox->nBlockedMsg   += RECEIVER;
+            //mBox->nBlockedMsg   += RECEIVER;
 
             // Move receiving task from readyList to waitingList
             elmt = extract_readyList();
@@ -482,7 +482,7 @@ exception receive_wait(mailbox* mBox, void* pData) {
             message->pPrevious->pNext = message->pNext;
             message->pNext->pPrevious = message->pPrevious;
             mBox->nMessages     += SENDER;
-            mBox->nBlockedMsg   += SENDER;
+            //mBox->nBlockedMsg   += SENDER;
 
             // BEGIN CRITICAL ZONE
             isr_off();
@@ -510,23 +510,51 @@ exception send_no_wait(mailbox* mBox, void* pData) {
 
     if(first == TRUE) {
         first = FALSE;
-        if() {  // If receiving task is waiting
+        if(mBox->nMessages < 0) {  // If receiving task is waiting
+            // Take the oldest message in the mailbox
+            message = mBox->pTail->pPrevious;
 
+            // Copy data to receiving task's data area
+            memcpy(message->pData, pData, mBox->nDataSize);
+
+            // Remove receiving task's message structure from the mailbox
+            message->pPrevious->pNext = message->pNext;
+            message->pNext->pPrevious = message->pPrevious;
+            mBox->nMessages     += SENDER;
+            //mBox->nBlockedMsg   += SENDER;
+
+            // Move receiving task to readyList
+            elmt = extract_waitingList(message->pBlock);
+            insert_readyList(elmt);
+
+            LoadContext();
         }
         else {
             // Allocate a message structure
             message = (msg*)malloc(sizeof(msg));
-            message->pBlock = readyList->pHead->pNext;
-            message->Status = SENDER;
+            // Here we need to allocate memory for the data outside of the stack
+            message->pData = (void*)malloc(mBox->nDataSize); /// @todo Verify (void*)
+            // Message is of type no_wait so we do not keep track of the sender
+            message->pBlock = NULL;
+
             // Copy data to the message
-            message->pData = pData;
+            memcpy(message->pData, pData, mBox->nDataSize);
 
             if(no_messages(mBox) >= mBox->nMaxMessages) { // If mailbox is full
-                // Remove oldest message structure
+                // Remove the oldest message (the last one)
+                mBox->pTail->pPrevious->pPrevious->pNext = mBox->pTail;
+                mBox->pTail->pPrevious = mBox->pTail->pPrevious->pPrevious;
+                mBox->nMessages     += RECEIVER;
+                //mBox->nBlockedMsg   += RECEIVER;
             }
 
             // Add message to the mailbox
-            /// @todo Mailbox are FIFO or LIFO???
+            mBox->pHead->pNext->pPrevious   = message;
+            message->pNext                  = mBox->pHead->pNext;
+            mBox->pHead->pNext              = message;
+            message->pPrevious              = mBox->pHead;
+            mBox->nMessages     += SENDER;
+            //mBox->nBlockedMsg   += SENDER;
         }
     }
     return OK;
@@ -542,19 +570,39 @@ exception receive_no_wait(mailbox* mBox, void* pData) {
 
     if(first == TRUE) {
         first = FALSE;
-        if() {  // If send message is waiting
-            if() {  // If send message was of type wait
+        if(mBox->nMessages > 0) {  // If send message is waiting
+            // Take the oldest message in the mailbox
+            message = mBox->pTail->pPrevious;
+
+            // Copy sender's data to receiving task's data area
+            memcpy(pData, message->pData, mBox->nDataSize);
+
+            // Remove sending task's message struct from the mailbox
+            message->pPrevious->pNext = message->pNext;
+            message->pNext->pPrevious = message->pPrevious;
+            mBox->nMessages     += RECEIVER;
+            //mBox->nBlockedMsg   += RECEIVER;
+
+            if(message->pBlock != NULL) {  // If send message was of type wait
                 // Move sending task to readyList
+                elmt = extract_waitingList(message->pBlock);
+                insert_readyList(elmt);
             }
             else {
-                // Free senders data area
+                // Free senders data area and message structure
+                // BEGIN CRITICAL ZONE
+                isr_off();
+                free(message->pData);
+                free(message);
+                isr_on();
+                // END CRITICAL ZONE
             }
         }
         LoadContext();
     }
 
     // Return status on received message
-    return OK; /// @todo Check what means the status in the message structure!
+    return OK;
 }
 
 ////////////
