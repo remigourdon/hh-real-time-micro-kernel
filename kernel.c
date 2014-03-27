@@ -350,19 +350,38 @@ exception send_wait(mailbox* mBox, void* pData) {
 
     if(first == TRUE) {
         first = FALSE;
-        if() {  // If receiving task is waiting
+        if(mBox->nMessages < 0) {  // If receiving task is waiting
+            // Take the oldest message in the mailbox
+            message = mBox->pTail->pPrevious;
 
+            // Copy sender's data to the data area of the receiver's message
+            memcpy(message->pData, pData, mBox->nDataSize);
+
+            // Remove receiving task's message structure from the mailbox
+            message->pPrevious->pNext = mBox->pTail;
+            mBox->pTail->pPrevious = message->pPrevious;
+            mBox->nMessages     += SENDER;
+            mBox->nBlockedMsg   += SENDER;
+
+            // Move receiving task to readyList
+            elmt = extract_waitingList(message->pBlock);
+            insert_readyList(elmt);
         }
         else {
             // Allocate a message structure
-            message = (msg*)malloc(sizeof(msg));
+            message = (msg*)malloc(sizeof(msg)); /// @todo What happens if no memory can be allocated??? Need to return an error message, so the return should be a variable set to FAIL/OK/DEADLINE_REACHED at convenience.
             message->pBlock = readyList->pHead->pNext;
             message->Status = SENDER;
             // Copy data to the message
             message->pData = pData;
 
             // Add message to the mailbox
-            /// @todo Mailbox are FIFO or LIFO???
+            mBox->pHead->pNext->pPrevious   = message;
+            message->pNext                  = mBox->pHead->pNext;
+            mBox->pHead->pNext              = message;
+            message->pPrevious              = mBox->pHead;
+            mBox->nMessages     += SENDER;
+            mBox->nBlockedMsg   += SENDER;
 
             // Move sending task from readyList to waitingList
             elmt = extract_readyList();
@@ -372,11 +391,15 @@ exception send_wait(mailbox* mBox, void* pData) {
     }
     else {
         if(ticks() > Running->DeadLine) {  // If deadline is reached
+            // Remove message from mailbox
+            message->pPrevious->pNext = message->pNext;
+            message->pNext->pPrevious = message->pPrevious;
+            mBox->nMessages     += RECEIVER;
+            mBox->nBlockedMsg   += RECEIVER;
+
             // BEGIN CRITICAL ZONE
             isr_off();
             free(message);
-            // Dicreases blocked msg counter
-            mBox->nBlockedMsg--;
             isr_on();
             // END CRITICAL ZONE
             return DEADLINE_REACHED;
