@@ -693,7 +693,5 @@ void TimerInt(void) {
     while(ticks() >= waitingList->pHead->pNext->pTask->DeadLine || waitingList->pHead->pNext == waitingList->pTail) {
         elmt = extract_waitingList(waitingList->pHead->pNext);
         insert_readyList(elmt);
-        // Clean up their Mailbox entry
-
     }
 }
