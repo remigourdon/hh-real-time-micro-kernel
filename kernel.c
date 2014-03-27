@@ -331,7 +331,7 @@ exception remove_mailbox(mailbox* mBox) {
 }
 
 int no_messages(mailbox* mBox) {
-    return mBox->nMessages + mBox->nBlockedMsg; /// @todo Check if it is correct way
+    return mBox->nMessages;
 }
 
 exception send_wait(mailbox* mBox, void* pData) {
