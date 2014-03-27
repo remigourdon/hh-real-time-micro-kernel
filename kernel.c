@@ -358,8 +358,8 @@ exception send_wait(mailbox* mBox, void* pData) {
             memcpy(message->pData, pData, mBox->nDataSize);
 
             // Remove receiving task's message structure from the mailbox
-            message->pPrevious->pNext = mBox->pTail;
-            mBox->pTail->pPrevious = message->pPrevious;
+            message->pPrevious->pNext = message->pNext;
+            message->pNext->pPrevious = message->pPrevious;
             mBox->nMessages     += SENDER;
             mBox->nBlockedMsg   += SENDER;
 
@@ -371,8 +371,8 @@ exception send_wait(mailbox* mBox, void* pData) {
             // Allocate a message structure
             message = (msg*)malloc(sizeof(msg)); /// @todo What happens if no memory can be allocated??? Need to return an error message, so the return should be a variable set to FAIL/OK/DEADLINE_REACHED at convenience.
             message->pBlock = readyList->pHead->pNext;
-            message->Status = SENDER;
-            // Copy data to the message
+
+            // Message data field points to data pointer parameter
             message->pData = pData;
 
             // Add message to the mailbox
@@ -426,22 +426,49 @@ exception receive_wait(mailbox* mBox, void* pData) {
 
     if(first == TRUE) {
         first = FALSE;
-        if() {  // If send message is waiting
-            if() {  // If send message was of type wait
+        if(mBox->nMessages > 0) {  // If send message is waiting
+            // Take the oldest message in the mailbox
+            message = mBox->pTail->pPrevious;
+
+            // Copy sender's data to receiving task's data area
+            memcpy(pData, message->pData, mBox->nDataSize);
+
+            // Remove sending task's message struct from the mailbox
+            message->pPrevious->pNext = message->pNext;
+            message->pNext->pPrevious = message->pPrevious;
+            mBox->nMessages     += RECEIVER;
+            mBox->nBlockedMsg   += RECEIVER;
+
+            if(message->pBlock != NULL) {  // If send message was of type wait
                 // Move sending task to readyList
+                elmt = extract_waitingList(message->pBlock);
+                insert_readyList(elmt);
             }
             else {
-                // Free senders data area
+                // Free senders data area and message structure
+                // BEGIN CRITICAL ZONE
+                isr_off();
+                free(message->pData);
+                free(message);
+                isr_on();
+                // END CRITICAL ZONE
             }
         }
         else {
             // Allocate a message structure
             message = (msg*)malloc(sizeof(msg));
             message->pBlock = readyList->pHead->pNext;
-            message->Status = RECEIVER;
+
+            // Message data field points to data pointer parameter
+            message->pData = pData;
 
             // Add message to the mailbox
-            /// @todo Mailbox are FIFO or LIFO???
+            mBox->pHead->pNext->pPrevious   = message;
+            message->pNext                  = mBox->pHead->pNext;
+            mBox->pHead->pNext              = message;
+            message->pPrevious              = mBox->pHead;
+            mBox->nMessages     += RECEIVER;
+            mBox->nBlockedMsg   += RECEIVER;
 
             // Move receiving task from readyList to waitingList
             elmt = extract_readyList();
@@ -451,11 +478,15 @@ exception receive_wait(mailbox* mBox, void* pData) {
     }
     else {
         if(ticks() > Running->DeadLine) {   // If deadline is reached
+            // Remove message from mailbox
+            message->pPrevious->pNext = message->pNext;
+            message->pNext->pPrevious = message->pPrevious;
+            mBox->nMessages     += SENDER;
+            mBox->nBlockedMsg   += SENDER;
+
             // BEGIN CRITICAL ZONE
             isr_off();
             free(message);
-            // Increases blocked msg counter
-            mBox->nBlockedMsg++;
             isr_on();
             // END CRITICAL ZONE
             return DEADLINE_REACHED;
