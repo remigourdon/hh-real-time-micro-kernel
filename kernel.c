@@ -277,7 +277,6 @@ void terminate(void) {
 
     // Destroy structures dynamically allocated
     isr_off();
-    free(terminatingElmt->pMessage); /// @todo Check if it is the right way to do it
     free(terminatingElmt->pTask);
     free(terminatingElmt);
     isr_on();
