@@ -16,16 +16,23 @@ list* create_emptyList(void) {
     isr_off();
     newList = (list*)malloc(sizeof(list));
 
-    newList->pHead = (listobj*)malloc(sizeof(listobj));
-    newList->pTail = (listobj*)malloc(sizeof(listobj));
+    newList->pHead          = (listobj*)malloc(sizeof(listobj));
+    newList->pHead->pTask   = (TCB*)malloc(sizeof(TCB));
+
+    newList->pTail          = (listobj*)malloc(sizeof(listobj));
+    newList->pTail->pTask   = (TCB*)malloc(sizeof(TCB));
     isr_on();
     // END CRITICAL ZONE
 
-    newList->pHead->pPrevious = NULL;
-    newList->pHead->pNext     = newList->pTail;
+    newList->pHead->pPrevious       = NULL;
+    newList->pHead->pNext           = newList->pTail;
+    newList->pHead->nTCnt           = UINT_MIN;
+    newList->pHead->pTask->DeadLine = UINT_MIN;
 
-    newList->pTail->pNext     = NULL;
-    newList->pTail->pPrevious = newList->pHead;
+    newList->pTail->pNext           = NULL;
+    newList->pTail->pPrevious       = newList->pHead;
+    newList->pTail->nTCnt           = UINT_MIN;
+    newList->pTail->pTask->DeadLine = UINT_MIN;
 
     return newList;
 }
