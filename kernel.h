@@ -140,6 +140,13 @@ typedef struct {
 list* create_emptyList(void);
 
 /**
+ * @brief Destroy a specified list and free memory.
+ *
+ * @param list Pointer to the list to be destroyed.
+ */
+void destroy_list(list* list);
+
+/**
  * @brief Insert a new element in the readyList.
  *
  * The list is sorted from the lowest deadline values first.

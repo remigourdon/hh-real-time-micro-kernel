@@ -37,6 +37,14 @@ list* create_emptyList(void) {
     return newList;
 }
 
+void destroy_list(list* list) {
+    free(list->pHead->pTask);
+    free(list->pHead);
+    free(list->pTail->pTask);
+    free(list->pTail);
+    free(list);
+}
+
 exception insert_readyList(listobj* elmt) {
     listobj* current;
 
